@@ -82,7 +82,7 @@ app.get('/api/getLocation', function (req, res) {
 
     console.log(date_ob);
 
-    locationModel.find({ date: getFormattedDate(date_ob) }).exec((err, location) => {
+    locationModel.find((err, location) => {
         if (err) {
             return res.status(500).send("Internal server error")
         } else if (location) {
