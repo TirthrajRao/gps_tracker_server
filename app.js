@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const locationModel = require('./location.model');
+const CronJob = require('cron').CronJob;
 
 mongoose.connect('mongodb://localhost:27017/myLocationApp', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
@@ -18,41 +19,22 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-
-
-function resetAtMidnight() {
-    var now = new Date();
-    var night = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1, // the next day, ...
-        0, 0, 0 // ...at 00:00:00 hours
-    );
-    var msToMidnight = night.getTime() - now.getTime();
-
-    setTimeout(function () {
-        reset();              //      <-- This is the function being called at midnight.
-        resetAtMidnight();    //      Then, reset again next midnight.
-    }, msToMidnight);
-}
+new CronJob('00 00 00 * * *', function() {
+    console.log('You will see this message every second');
+    reset();
+  }, null, true, 'Asia/Kolkata');
 
 function reset() {
-
     var dt = new Date();
-dt.setDate(d.getDate() - 2);
+    dt.setDate(dt.getDate() - 1);
 
-    //GetDevice by Id get api
-
-        locationModel.findOneAndRemove({ date: getFormattedDate(dt),time: getFormattedTime(dt) }, (err, location) => {
-            if (err) {
-                return res.status(500).send("Internal server error")
-            } else if (device) {
-                return res.send(device)
-            } else {
-                return res.status(404).send("No user found")
-            }
-        });
-    
+    locationModel.remove({ date: getFormattedDate(dt) }, (err, location) => {
+        if (err) {
+            console.log("Internal server error");
+        } else {
+            console.log(location);
+        }
+    });
 }
 
 
@@ -85,17 +67,17 @@ dt.setDate(d.getDate() - 2);
 
 app.post('/api/time', (req, res) => {
 
-    // var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-    // indiaTime = new Date(indiaTime);
-    // console.log('India time: ' + indiaTime.toLocaleString())
+    var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    indiaTime = new Date(indiaTime);
+    console.log('India time: ' + indiaTime.toLocaleString())
 
-    // console.log(indiaTime.getDate() + 20)
-    // res.send(getFormattedDate(indiaTime));
+    console.log(indiaTime.getDate() + 20)
+    res.send(moment().subtract('days', 2));
 
-//     var d = new Date();
-// d.setDate(d.getDate() - 2);
+    //     var d = new Date();
+    // d.setDate(d.getDate() - 2);
 
-// res.send(getFormattedDate(d));
+    // res.send(getFormattedDate(d));
 
 });
 
