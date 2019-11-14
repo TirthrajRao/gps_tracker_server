@@ -47,16 +47,30 @@ app.use(bodyParser.json())
 
 
 
+app.post('/api/time', (req, res) => {
+
+    var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    indiaTime = new Date(indiaTime);
+    console.log('India time: ' + indiaTime.toLocaleString())
+
+
+    res.send(getFormattedTime(indiaTime));
+
+});
+
+
+
 app.post('/api/sendLocation', (req, res) => {
 
     console.log(req.query);
 
-    let date_ob = new Date();
+    var indiaTime = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    indiaTime = new Date(indiaTime);
+    console.log(getFormattedTime(indiaTime))
 
-    console.log(date_ob);
 
-    console.log({ time: date_ob.Date,Date: date_ob ,lat: req.query.lat, long: req.query.lng });
-    const newLocation = new locationModel({ time: getFormattedTime(date_ob), date: getFormattedDate(date_ob), lat: req.query.lat, long: req.query.lng });
+    console.log({ time: indiaTime, Date: indiaTime, lat: req.query.lat, long: req.query.lng });
+    const newLocation = new locationModel({ time: getFormattedTime(indiaTime), date: getFormattedDate(indiaTime), lat: req.query.lat, long: req.query.lng });
     console.log(newLocation);
 
     newLocation.save((err, location) => {
@@ -76,13 +90,11 @@ app.post('/api/sendLocation', (req, res) => {
 
 app.get('/api/getLocation', function (req, res) {
 
-    let date_ob = new Date();
-
     const datetime = new locationModel(req.body);
 
-    console.log(date_ob);
+    console.log(req.query.date);
 
-    locationModel.find((err, location) => {
+    locationModel.find({ date: req.query.date }).exec((err, location) => {
         if (err) {
             return res.status(500).send("Internal server error")
         } else if (location) {
@@ -96,26 +108,24 @@ app.get('/api/getLocation', function (req, res) {
 });
 
 
-function getFormattedDate(today) 
-{
-    var dd   = today.getDate();
-    var mm   = today.getMonth()+1; //January is 0!
+function getFormattedDate(today) {
+    var dd = today.getDate();
+    var mm = today.getMonth() + 1; //January is 0!
     var yyyy = today.getFullYear();
-    
-    if(dd<10)  { dd='0'+dd } 
-    if(mm<10)  { mm='0'+mm } 
-    
-    return dd+'-'+mm+'-'+yyyy;
+
+    if (dd < 10) { dd = '0' + dd }
+    if (mm < 10) { mm = '0' + mm }
+
+    return dd + '-' + mm + '-' + yyyy;
 }
 
-function getFormattedTime(today) 
-{
+function getFormattedTime(today) {
     var hour = today.getHours();
     var minu = today.getMinutes();
 
-    if(minu<10){ minu='0'+minu } 
+    if (minu < 10) { minu = '0' + minu }
 
-    return hour+':'+minu;
+    return hour + ':' + minu;
 }
 
 
