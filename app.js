@@ -20,10 +20,10 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-new CronJob('00 00 00 * * *', function() {
+new CronJob('00 00 00 * * *', function () {
     console.log('You will see this message every MidNight');
     reset();
-  }, null, true, 'Asia/Kolkata');
+}, null, true, 'Asia/Kolkata');
 
 function reset() {
     var dt = new Date();
@@ -37,32 +37,6 @@ function reset() {
         }
     });
 }
-
-
-// app.post('/api/sendLocation', (req, res) => {
-
-//     console.log(req.query);
-//     console.log({ time: "no time", lat: req.query.lat, long: req.query.lng });
-//     const newLocation = new locationModel({ time: "no time", lat: req.query.lat, long: req.query.lng });
-//     console.log(newLocation);
-
-//     locationModel.remove((err, location) => {
-//         console.log(err);
-//         if (err) {
-//             return res.status(500).send("Internal server error")
-//         }
-//         newLocation.save((err, location) => {
-//             if (err) {
-//                 return res.status(500).send('Internal server error');
-//             }
-//             console.log(location);
-//             return res.status(200).send({
-//                 message: 'New location added',
-//                 data: location
-//             });
-//         });
-//     });
-// });
 
 
 //Add User
@@ -94,18 +68,16 @@ app.post('/api/login', (req, res, next) => {
 
     userModel.find({ username: newUser.username }).exec((err, User) => {
         if (err) {
-
             console.log("Error  :::::::::::::::::::::::::: ", err);
-
             return res.status(500).send("Internal server error")
         } else if (User) {
             console.log("login Success  :::::::::::::::::::::::::: ", User);
             if (User.length != 0) {
-                    res.status(201).json({
-                        message: 'Login Success',
-                        status: 201,
-                        data: User
-                    });
+                res.status(201).json({
+                    message: 'Login Success',
+                    status: 201,
+                    data: User
+                });
             }
             else {
                 res.status(203).json({
