@@ -27,7 +27,7 @@ new CronJob('00 00 00 * * *', function () {
 
 function reset() {
     var dt = new Date();
-    dt.setDate(dt.getDate() - 1);
+    dt.setDate(dt.getDate() - 2);
 
     locationModel.remove({ date: getFormattedDate(dt) }, (err, location) => {
         if (err) {
