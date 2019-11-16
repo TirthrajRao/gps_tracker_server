@@ -4,6 +4,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const locationModel = require('./location.model');
+const userModel = require('./user.model');
 const CronJob = require('cron').CronJob;
 
 mongoose.connect('mongodb://localhost:27017/myLocationApp', { useNewUrlParser: true, useUnifiedTopology: true })
@@ -20,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 new CronJob('00 00 00 * * *', function() {
-    console.log('You will see this message every second');
+    console.log('You will see this message every MidNight');
     reset();
   }, null, true, 'Asia/Kolkata');
 
@@ -62,6 +63,61 @@ function reset() {
 //         });
 //     });
 // });
+
+
+//Add User
+
+app.post('/api/addUser', (req, res, next) => {
+    console.log(req.body);
+    const newUser = new userModel(req.body);
+    newUser.save((err, user) => {
+        if (err) {
+            res.status(500).send('Internal server error');
+        } else {
+            console.log(user);
+            res.status(201).json({
+                message: 'New user created',
+                data: user
+            });
+        }
+    });
+})
+
+
+//Login Api
+
+app.post('/api/login', (req, res, next) => {
+
+    const newUser = new userModel(req.body);
+
+    console.log("Email for login :::::::::::::::::::::::::: ", newUser.username);
+
+    userModel.find({ username: newUser.username }).exec((err, User) => {
+        if (err) {
+
+            console.log("Error  :::::::::::::::::::::::::: ", err);
+
+            return res.status(500).send("Internal server error")
+        } else if (User) {
+            console.log("login Success  :::::::::::::::::::::::::: ", User);
+            if (User.length != 0) {
+                    res.status(201).json({
+                        message: 'Login Success',
+                        status: 201,
+                        data: User
+                    });
+            }
+            else {
+                res.status(203).json({
+                    message: 'No user found',
+                    status: 203
+                });
+            }
+        } else {
+            return res.status(404).send("No user found")
+        }
+    });
+})
 
 
 
